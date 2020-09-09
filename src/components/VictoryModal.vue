@@ -1,10 +1,12 @@
 <template>
-  <v-dialog v-model="localShow" width="500" persistent>
+  <v-dialog v-model="localShow" width="800" persistent>
     <v-card class="text-center">
       <v-card-title>
-        <h3 class="flex title text-center">Victory!</h3>
+        <h3 class="flex text-center pa-3" style="font-size: xxx-large">
+          Victory!
+        </h3>
       </v-card-title>
-      <v-card-text>You fucking win!</v-card-text>
+      <StarBadge :score="score" />
       <v-card-text>
         <h1 class="headline">{{ score }}</h1>
       </v-card-text>
@@ -21,9 +23,13 @@ import { GameState } from '@/models';
 import Vue from 'vue';
 import { Component, Model, Watch } from 'vue-property-decorator';
 import { State, Mutation } from 'vuex-class';
+import StarBadge from './StarBadge.vue';
 
 @Component({
   name: 'FlipCard',
+  components: {
+    StarBadge,
+  },
 })
 export default class FlipCard extends Vue {
   @Model('input')
