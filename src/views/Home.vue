@@ -5,6 +5,14 @@
       <div class="d-flex flex-column">
         <v-spacer></v-spacer>
         <div class="d-flex align-center flex-column">
+          <div class="d-flex flex">
+            <h1
+              class="animate__animated animate__flipInY"
+              style="font-size: 7em"
+            >
+              Baby Flip
+            </h1>
+          </div>
           <div class="flex">
             <v-btn
               icon
