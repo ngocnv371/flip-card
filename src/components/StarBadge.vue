@@ -2,25 +2,21 @@
   <div class="d-flex">
     <v-spacer></v-spacer>
     <div class="d-flex">
-      <v-img :src="achievementSvgUrl" width="400"></v-img>
+      <VectorIcon icon="achievement" size="400" />
     </div>
     <v-spacer></v-spacer>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import VectorIcon from './VectorIcon.vue';
 
 @Component({
   name: 'StarBadge',
+  components: {
+    VectorIcon,
+  },
 })
-export default class StarBadge extends Vue {
-  @Prop({ required: true })
-  public score!: number;
-
-  public get achievementSvgUrl() {
-    const images = require.context('../assets/', false, /\.svg$/);
-    return images('./achievement.svg');
-  }
-}
+export default class StarBadge extends Vue {}
 </script>
