@@ -18,7 +18,7 @@
           x-large
           width="150"
           height="150"
-          @click="resetGame"
+          @click="$emit('end')"
         >
           <v-icon size="100">mdi-home</v-icon>
         </v-btn>

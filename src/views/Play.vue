@@ -15,7 +15,7 @@
       </div>
       <v-spacer></v-spacer>
     </div>
-    <VictoryModal v-model="victory" />
+    <VictoryModal v-model="victory" @end="$emit('end')" />
   </div>
 </template>
 
