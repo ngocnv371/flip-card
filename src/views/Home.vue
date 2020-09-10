@@ -10,7 +10,7 @@
               class="animate__animated animate__flipInY"
               style="font-size: 7em"
             >
-              Baby Flip
+              <VectorIcon class="d-inline-block" icon="baby" /> Baby Flip
             </h1>
           </div>
           <div class="flex">
@@ -63,9 +63,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import VectorIcon from '../components/VectorIcon.vue';
 
 @Component({
-  components: {},
+  components: {
+    VectorIcon,
+  },
 })
 export default class Home extends Vue {}
 </script>
