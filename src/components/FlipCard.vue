@@ -1,5 +1,5 @@
 <template>
-  <v-card width="200" @click="handleFlip">
+  <v-card width="200" @click="handleFlip" :elevation="10">
     <v-img :src="up ? imageUrl : backImageUrl"></v-img>
   </v-card>
 </template>

@@ -2,15 +2,7 @@
   <div class="d-flex">
     <v-spacer></v-spacer>
     <div class="d-flex">
-      <div class="flex">
-        <v-icon color="amber" size="xxx-large">mdi-star</v-icon>
-      </div>
-      <div class="flex">
-        <v-icon color="amber" size="xxx-large">mdi-star-half</v-icon>
-      </div>
-      <div class="flex">
-        <v-icon color="amber" size="xxx-large">mdi-star-outline</v-icon>
-      </div>
+      <v-img :src="achievementSvgUrl" width="400"></v-img>
     </div>
     <v-spacer></v-spacer>
   </div>
@@ -25,5 +17,10 @@ import { Component, Prop } from 'vue-property-decorator';
 export default class StarBadge extends Vue {
   @Prop({ required: true })
   public score!: number;
+
+  public get achievementSvgUrl() {
+    const images = require.context('../assets/', false, /\.svg$/);
+    return images('./achievement.svg');
+  }
 }
 </script>

@@ -1,18 +1,37 @@
 <template>
-  <v-dialog v-model="localShow" width="800" persistent>
-    <v-card class="text-center">
-      <v-card-title>
-        <h3 class="flex text-center pa-3" style="font-size: xxx-large">
-          Victory!
-        </h3>
-      </v-card-title>
-      <StarBadge :score="score" />
-      <v-card-text>
-        <h1 class="headline">{{ score }}</h1>
-      </v-card-text>
+  <v-dialog
+    v-model="localShow"
+    width="800"
+    persistent
+    content-class="elevation-0"
+    overlay-opacity="0.8"
+  >
+    <v-card
+      class="text-center"
+      flat
+      style="background: transparent !important;"
+    >
+      <StarBadge :score="score" class="pt-5" />
       <v-card-actions>
+        <v-btn
+          color="success"
+          x-large
+          width="150"
+          height="150"
+          @click="resetGame"
+        >
+          <v-icon size="100">mdi-home</v-icon>
+        </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="resetGame">Again</v-btn>
+        <v-btn
+          color="primary"
+          x-large
+          width="150"
+          height="150"
+          @click="resetGame"
+        >
+          <v-icon size="120">mdi-play</v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
