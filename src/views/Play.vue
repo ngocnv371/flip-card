@@ -8,7 +8,7 @@
             <FlipCard
               :card="cards[(row - 1) * 3 + col - 1].name"
               :up="cards[(row - 1) * 3 + col - 1].up"
-              :size="120"
+              :size="130"
               @flip="flip((row - 1) * 3 + col - 1)"
             />
           </div>
