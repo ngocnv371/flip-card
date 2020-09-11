@@ -1,9 +1,9 @@
 <template>
   <v-dialog
     v-model="localShow"
-    width="800"
+    :width="config.width"
     persistent
-    content-class="elevation-0"
+    content-class="elevation-0 overflow-hidden"
     overlay-opacity="0.8"
   >
     <v-card
@@ -11,26 +11,26 @@
       flat
       style="background: transparent !important;"
     >
-      <StarBadge :score="score" class="pt-5" />
+      <StarBadge :score="score" class="pt-5" :size="config.badge.size" />
       <v-card-actions>
         <v-btn
           color="success"
           x-large
-          width="150"
-          height="150"
+          :width="config.home.size"
+          :height="config.home.size"
           @click="$emit('end')"
         >
-          <v-icon size="100">mdi-home</v-icon>
+          <v-icon :size="config.home.size">mdi-home</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
           x-large
-          width="150"
-          height="150"
+          :width="config.play.size"
+          :height="config.play.size"
           @click="resetGame"
         >
-          <v-icon size="120">mdi-play</v-icon>
+          <v-icon :size="config.play.size">mdi-play</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -45,12 +45,12 @@ import { State, Mutation } from 'vuex-class';
 import StarBadge from './StarBadge.vue';
 
 @Component({
-  name: 'FlipCard',
+  name: 'VictoryModal',
   components: {
     StarBadge,
   },
 })
-export default class FlipCard extends Vue {
+export default class VictoryModal extends Vue {
   @Model('input')
   public show!: boolean;
 
@@ -61,6 +61,43 @@ export default class FlipCard extends Vue {
   public resetGame!: () => void;
 
   public localShow = false;
+  public configXs = {
+    width: 300,
+    badge: {
+      size: 100,
+    },
+    home: {
+      size: 50,
+    },
+    play: {
+      size: 50,
+    },
+  };
+  public configSm = {
+    width: 400,
+    badge: {
+      size: 200,
+    },
+    home: {
+      size: 100,
+    },
+    play: {
+      size: 100,
+    },
+  };
+  public configMd = {
+    width: 800,
+    badge: {
+      size: 400,
+    },
+    home: {
+      size: 150,
+    },
+    play: {
+      size: 150,
+    },
+  };
+  public config = this.configMd;
 
   @Watch('show', { immediate: true })
   public onShowChanged() {
@@ -73,6 +110,16 @@ export default class FlipCard extends Vue {
   public onLocalShowChanged() {
     if (this.show != this.localShow) {
       this.$emit('input', this.localShow);
+    }
+  }
+
+  public mounted() {
+    if (this.$vuetify.breakpoint.smOnly) {
+      this.config = this.configSm;
+    } else if (this.$vuetify.breakpoint.mdAndUp) {
+      this.config = this.configMd;
+    } else if (this.$vuetify.breakpoint.xsOnly) {
+      this.config = this.configXs;
     }
   }
 }
