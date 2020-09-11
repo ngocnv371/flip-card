@@ -6,8 +6,9 @@
         <div class="d-flex my-4" v-for="row of 2" :key="`row-${row}`">
           <div class="d-flex ma-2" v-for="col of 3" :key="`col-${col}`">
             <FlipCard
-              :letter="cards[(row - 1) * 3 + col - 1].letter"
+              :card="cards[(row - 1) * 3 + col - 1].name"
               :up="cards[(row - 1) * 3 + col - 1].up"
+              :size="120"
               @flip="flip((row - 1) * 3 + col - 1)"
             />
           </div>
@@ -47,12 +48,12 @@ export default class Play extends Vue {
   private upCount = 0;
 
   public cards = [
-    { letter: 'a', up: false },
-    { letter: 'a', up: false },
-    { letter: 'b', up: false },
-    { letter: 'b', up: false },
-    { letter: 'c', up: false },
-    { letter: 'c', up: false },
+    { name: 'banana', up: false },
+    { name: 'banana', up: false },
+    { name: 'apple', up: false },
+    { name: 'apple', up: false },
+    { name: 'watermelon', up: false },
+    { name: 'watermelon', up: false },
   ];
 
   private scramble() {
@@ -93,7 +94,7 @@ export default class Play extends Vue {
       if (this.cards[index].up) {
         return;
       }
-      if (this.cards[this.lastFlipIndex].letter === this.cards[index].letter) {
+      if (this.cards[this.lastFlipIndex].name === this.cards[index].name) {
         this.cards[index].up = true;
         this.lastFlipIndex = -1;
         console.log('score!');
