@@ -1,18 +1,20 @@
 <template>
-  <div class="play">
-    <div class="horizontal d-flex">
+  <div class="play d-flex" style="height: 100%">
+    <div class="horizontal d-flex flex">
       <v-spacer></v-spacer>
-      <div class="grid-outer-container">
-        <div class="d-flex my-4" v-for="row of 2" :key="`row-${row}`">
+      <div class="grid-outer-container d-flex flex-column">
+        <v-spacer></v-spacer>
+        <div class="d-flex" v-for="row of 2" :key="`row-${row}`">
           <div class="d-flex ma-2" v-for="col of 3" :key="`col-${col}`">
             <FlipCard
               :card="cards[(row - 1) * 3 + col - 1].name"
               :up="cards[(row - 1) * 3 + col - 1].up"
-              :size="130"
+              :size="config.card.size"
               @flip="flip((row - 1) * 3 + col - 1)"
             />
           </div>
         </div>
+        <v-spacer></v-spacer>
       </div>
       <v-spacer></v-spacer>
     </div>
@@ -56,6 +58,17 @@ export default class Play extends Vue {
     { name: 'watermelon', up: false },
   ];
 
+  public configXs = {
+    card: { size: 130 },
+  };
+  public configSm = {
+    card: { size: 130 },
+  };
+  public configMd = {
+    card: { size: 200 },
+  };
+  public config = this.configMd;
+
   private scramble() {
     this.cards = this.cards.sort(() => Math.random() - Math.random());
     for (const card of this.cards) {
@@ -71,6 +84,17 @@ export default class Play extends Vue {
 
   public mounted() {
     this.resetGame();
+    this.resolveConfig();
+  }
+
+  private resolveConfig() {
+    if (this.$vuetify.breakpoint.xsOnly) {
+      this.config = this.configXs;
+    } else if (this.$vuetify.breakpoint.smOnly) {
+      this.config = this.configSm;
+    } else if (this.$vuetify.breakpoint.mdAndUp) {
+      this.config = this.configMd;
+    }
   }
 
   @Watch('instance', { immediate: true })
