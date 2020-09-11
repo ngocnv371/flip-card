@@ -114,6 +114,10 @@ export default class VictoryModal extends Vue {
   }
 
   public mounted() {
+    this.resolveConfig();
+  }
+
+  private resolveConfig() {
     if (this.$vuetify.breakpoint.smOnly) {
       this.config = this.configSm;
     } else if (this.$vuetify.breakpoint.mdAndUp) {

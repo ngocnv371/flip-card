@@ -1,5 +1,5 @@
 <template>
-  <div class="home d-flex" style="height: 100%" v-resize="onResize">
+  <div class="home d-flex" style="height: 100%">
     <div class="d-flex flex text-center">
       <v-spacer></v-spacer>
       <div class="d-flex flex-column">
@@ -22,13 +22,13 @@
           <div class="flex primary-controls">
             <v-btn
               icon
-              :width="config.primaryControls.play.size"
-              :height="config.primaryControls.play.size"
+              :width="config.play.size"
+              :height="config.play.size"
               color="primary"
               class="animate__animated animate__tada animate__infinite"
               @click="$emit('play')"
             >
-              <v-icon :size="config.primaryControls.play.size">mdi-play</v-icon>
+              <v-icon :size="config.play.size">mdi-play</v-icon>
             </v-btn>
           </div>
           <div class="d-flex flex secondary-controls">
@@ -36,7 +36,9 @@
               icon
               color="primary"
               x-large
-              class="animate__animated animate__fadeIn animate__slower"
+              class="ma-3 animate__animated animate__fadeIn animate__slower"
+              :width="config.button.size"
+              :height="config.button.size"
             >
               <v-icon>mdi-music</v-icon>
             </v-btn>
@@ -45,7 +47,9 @@
               icon
               color="primary"
               x-large
-              class="animate__animated animate__fadeIn animate__slower"
+              class="ma-3 animate__animated animate__fadeIn animate__slower"
+              :width="config.button.size"
+              :height="config.button.size"
             >
               <v-icon>mdi-information-outline</v-icon>
             </v-btn>
@@ -54,7 +58,9 @@
               icon
               color="primary"
               x-large
-              class="animate__animated animate__fadeIn animate__slower"
+              class="ma-3 animate__animated animate__fadeIn animate__slower"
+              :width="config.button.size"
+              :height="config.button.size"
             >
               <v-icon>mdi-facebook</v-icon>
             </v-btn>
@@ -77,54 +83,62 @@ import VectorIcon from '../components/VectorIcon.vue';
   },
 })
 export default class Home extends Vue {
-  public config = {
+  public configMd = {
     title: {
       icon: {
         size: 100,
       },
       fontSize: '7em',
     },
-    primaryControls: {
-      play: {
-        size: 200,
-      },
+    play: {
+      size: 200,
     },
-    secondaryControls: {
-      music: {
-        size: 32,
-      },
-      info: {
-        size: 32,
-      },
-      facebook: {
-        size: 32,
-      },
+    button: {
+      size: 32,
     },
   };
+  public configSm = {
+    title: {
+      icon: {
+        size: 70,
+      },
+      fontSize: '4em',
+    },
+    play: {
+      size: 120,
+    },
+    button: {
+      size: 32,
+    },
+  };
+  public configXs = {
+    title: {
+      icon: {
+        size: 50,
+      },
+      fontSize: '3em',
+    },
+    play: {
+      size: 100,
+    },
+    button: {
+      size: 32,
+    },
+  };
+  public config = this.configMd;
 
   public mounted() {
     this.resolveConfig();
   }
 
   private resolveConfig() {
-    console.log('new breakpoint detected ' + this.$vuetify.breakpoint.name);
     if (this.$vuetify.breakpoint.xsOnly) {
-      this.config.title.icon.size = 50;
-      this.config.title.fontSize = '3em';
-      this.config.primaryControls.play.size = 100;
+      this.config = this.configXs;
     } else if (this.$vuetify.breakpoint.smOnly) {
-      this.config.title.icon.size = 70;
-      this.config.title.fontSize = '4em';
-      this.config.primaryControls.play.size = 120;
+      this.config = this.configSm;
     } else if (this.$vuetify.breakpoint.mdAndUp) {
-      this.config.title.icon.size = 100;
-      this.config.title.fontSize = '7em';
-      this.config.primaryControls.play.size = 200;
+      this.config = this.configMd;
     }
-  }
-
-  public onResize() {
-    this.resolveConfig();
   }
 }
 </script>
