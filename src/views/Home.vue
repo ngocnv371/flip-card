@@ -7,7 +7,7 @@
           style="font-size: 7em"
           :style="{ fontSize: config.title.fontSize }"
         >
-          <VectorIcon
+          <VectorImage
             class="d-inline-block"
             icon="baby"
             :size="config.title.icon.size"
@@ -67,11 +67,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import VectorIcon from '../components/VectorIcon.vue';
+import VectorImage from '../components/VectorImage.vue';
 
 @Component({
   components: {
-    VectorIcon,
+    VectorImage,
   },
 })
 export default class Home extends Vue {

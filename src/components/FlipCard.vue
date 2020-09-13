@@ -6,7 +6,7 @@
     @click="handleFlip"
     :elevation="10"
   >
-    <VectorIcon class="ma-3" :icon="up ? card : 'question-mark'"></VectorIcon>
+    <VectorImage class="ma-3" :icon="up ? card : 'question-mark'"></VectorImage>
   </v-card>
 </template>
 
@@ -14,12 +14,12 @@
 import { animateCSS } from '@/util';
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import VectorIcon from './VectorIcon.vue';
+import VectorImage from './VectorImage.vue';
 
 @Component({
   name: 'FlipCard',
   components: {
-    VectorIcon,
+    VectorImage,
   },
 })
 export default class FlipCard extends Vue {

@@ -88,7 +88,7 @@ export default class VictoryModal extends Vue {
   public configMd = {
     width: 800,
     badge: {
-      size: 400,
+      size: 350,
     },
     home: {
       size: 150,

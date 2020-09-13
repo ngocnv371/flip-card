@@ -2,7 +2,12 @@
   <v-app dark>
     <v-main>
       <Play v-if="mode === 'play'" @end="mode = 'home'" />
-      <Home v-else @play="mode = 'play'" />
+      <Topics
+        v-else-if="mode === 'topics'"
+        @end="mode = 'home'"
+        @play="mode = 'play'"
+      />
+      <Home v-else @play="mode = 'topics'" />
     </v-main>
   </v-app>
 </template>
@@ -11,11 +16,13 @@
 import Vue from 'vue';
 import Home from './views/Home.vue';
 import Play from './views/Play.vue';
+import Topics from './views/Topics.vue';
 
 export default Vue.extend({
   name: 'App',
 
   components: {
+    Topics,
     Home,
     Play,
   },
