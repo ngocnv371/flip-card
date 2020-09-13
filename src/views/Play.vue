@@ -1,6 +1,15 @@
 <template>
   <div class="play d-flex" style="height: 100%">
-    <v-btn fab color="primary" fixed top left @click="$emit('back')">
+    <v-btn
+      fab
+      color="primary"
+      fixed
+      top
+      left
+      :width="config.back.size"
+      :height="config.back.size"
+      @click="$emit('back')"
+    >
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div class="horizontal d-flex flex">
@@ -62,12 +71,15 @@ export default class Play extends Vue {
   public cards: { name: string; up: boolean }[] = [];
 
   public configXs = {
+    back: { size: 40 },
     card: { 0: 120, 1: 120, 2: 120, 3: 90, 4: 70, 5: 70 },
   };
   public configSm = {
+    back: { size: 50 },
     card: { 0: 140, 1: 140, 2: 140, 3: 100, 4: 80, 5: 80 },
   };
   public configMd = {
+    back: { size: 80 },
     card: { 0: 260, 1: 260, 2: 220, 3: 200, 4: 160, 5: 160 },
   };
   public config = this.configMd;

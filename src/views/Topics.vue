@@ -3,7 +3,16 @@
     class="view-topics d-flex align-center overflow-y-hidden"
     style="height: 100%"
   >
-    <v-btn fab color="primary" fixed top left @click="$emit('back')">
+    <v-btn
+      fab
+      color="primary"
+      fixed
+      top
+      left
+      :width="config.back.size"
+      :height="config.back.size"
+      @click="$emit('back')"
+    >
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div class="d-flex flex text-center">
@@ -34,16 +43,19 @@ import VectorImage from '../components/VectorImage.vue';
 })
 export default class Topics extends Vue {
   public configMd = {
+    back: { size: 80 },
     topic: {
       size: 400,
     },
   };
   public configSm = {
+    back: { size: 50 },
     topic: {
       size: 250,
     },
   };
   public configXs = {
+    back: { size: 40 },
     topic: {
       size: 200,
     },
