@@ -109,16 +109,27 @@ export default class Play extends Vue {
     const names = [
       'apple',
       'banana',
-      'watermelon',
-      'dolphin',
       'cake',
-      'cheese',
       'carrot',
+      'cheese',
+      'cherry-blossom',
       'cherry',
+      'cookie',
       'crab',
+      'cupcake',
+      'dolphin',
       'donut',
+      'fish',
+      'jellyfish',
       'lemon',
-    ];
+      'octopus',
+      'orange',
+      'pineapple',
+      'starfish',
+      'strawberry',
+      'sunflower',
+      'watermelon',
+    ].sort(() => Math.random() - Math.random());
     this.cards = [];
     this.generateGrid();
     for (let index = 0; index < this.count / 2; index++) {
