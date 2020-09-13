@@ -1,5 +1,8 @@
 <template>
   <div class="play d-flex" style="height: 100%">
+    <v-btn fab color="primary" fixed top left @click="$emit('back')">
+      <v-icon>mdi-arrow-left</v-icon>
+    </v-btn>
     <div class="horizontal d-flex flex">
       <v-spacer></v-spacer>
       <div class="grid-outer-container d-flex flex-column">

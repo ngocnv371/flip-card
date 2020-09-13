@@ -1,10 +1,14 @@
 <template>
   <v-app dark>
     <v-main>
-      <Play v-if="mode === 'play'" @end="mode = 'home'" />
+      <Play
+        v-if="mode === 'play'"
+        @end="mode = 'home'"
+        @back="mode = 'topics'"
+      />
       <Topics
         v-else-if="mode === 'topics'"
-        @end="mode = 'home'"
+        @back="mode = 'home'"
         @play="mode = 'play'"
       />
       <Home v-else @play="mode = 'topics'" />

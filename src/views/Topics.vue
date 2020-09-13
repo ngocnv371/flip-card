@@ -3,6 +3,9 @@
     class="view-topics d-flex align-center overflow-y-hidden"
     style="height: 100%"
   >
+    <v-btn fab color="primary" fixed top left @click="$emit('back')">
+      <v-icon>mdi-arrow-left</v-icon>
+    </v-btn>
     <div class="d-flex flex text-center">
       <div class="flex d-flex ma-3" v-for="topic of topics" :key="topic.name">
         <v-card
