@@ -8,7 +8,7 @@
       <div class="grid-outer-container d-flex flex-column">
         <v-spacer></v-spacer>
         <div class="d-flex" v-for="row of 2" :key="`row-${row}`">
-          <div class="d-flex ma-2" v-for="col of 3" :key="`col-${col}`">
+          <div class="d-flex pa-1" v-for="col of 3" :key="`col-${col}`">
             <FlipCard
               :card="cards[(row - 1) * 3 + col - 1].name"
               :up="cards[(row - 1) * 3 + col - 1].up"
@@ -117,10 +117,10 @@ export default class Play extends Vue {
     if (index === this.lastFlipIndex) {
       return;
     }
+    if (this.cards[index].up) {
+      return;
+    }
     if (this.cards[this.lastFlipIndex]) {
-      if (this.cards[index].up) {
-        return;
-      }
       if (this.cards[this.lastFlipIndex].name === this.cards[index].name) {
         this.cards[index].up = true;
         this.lastFlipIndex = -1;
