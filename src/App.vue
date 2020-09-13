@@ -3,6 +3,7 @@
     <v-main>
       <Play
         v-if="mode === 'play'"
+        :level="level"
         @end="mode = 'home'"
         @back="mode = 'topics'"
       />
@@ -33,6 +34,7 @@ export default Vue.extend({
 
   data: () => ({
     mode: 'home',
+    level: 0,
   }),
 });
 </script>

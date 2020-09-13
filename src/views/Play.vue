@@ -7,13 +7,13 @@
       <v-spacer></v-spacer>
       <div class="grid-outer-container d-flex flex-column">
         <v-spacer></v-spacer>
-        <div class="d-flex" v-for="row of 2" :key="`row-${row}`">
-          <div class="d-flex pa-1" v-for="col of 3" :key="`col-${col}`">
+        <div class="d-flex" v-for="row of rows" :key="`row-${row}`">
+          <div class="d-flex pa-1" v-for="col of cols" :key="`col-${col}`">
             <FlipCard
-              :card="cards[(row - 1) * 3 + col - 1].name"
-              :up="cards[(row - 1) * 3 + col - 1].up"
+              :card="cards[(row - 1) * cols + col - 1].name"
+              :up="cards[(row - 1) * cols + col - 1].up"
               :size="config.card.size"
-              @flip="flip((row - 1) * 3 + col - 1)"
+              @flip="flip((row - 1) * cols + col - 1)"
             />
           </div>
         </div>
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import FlipCard from '../components/FlipCard.vue';
 import VictoryModal from '../components/VictoryModal.vue';
 import { Mutation, State } from 'vuex-class';
@@ -49,8 +49,15 @@ export default class Play extends Vue {
   @Mutation('addScore')
   public addScore!: () => void;
 
+  @Prop({ required: true })
+  public level!: number;
+
   private lastFlipIndex = -1;
+  private count = 0;
   private upCount = 0;
+  public rows = 1;
+  public cols = 1;
+  public countMap = [4, 6, 8, 12, 16, 24];
 
   public cards = [
     { name: 'banana', up: false },
@@ -79,7 +86,50 @@ export default class Play extends Vue {
     }
   }
 
+  private generateGrid() {
+    const count = this.countMap[this.level];
+    this.count = count;
+    const mid = Math.floor(Math.sqrt(count));
+    const remain = Math.floor(count / mid);
+    if (mid > remain) {
+      this.rows = remain;
+      this.cols = mid;
+    } else {
+      this.rows = mid;
+      this.cols = remain;
+    }
+  }
+
+  private generateCards() {
+    const names = [
+      'apple',
+      'banana',
+      'watermelon',
+      'dolphin',
+      'cake',
+      'cheese',
+      'carrot',
+      'cherry',
+      'crab',
+      'donut',
+      'lemon',
+    ];
+    this.cards = [];
+    this.generateGrid();
+    for (let index = 0; index < this.count / 2; index++) {
+      this.cards.push({
+        name: names[index],
+        up: false,
+      });
+      this.cards.push({
+        name: names[index],
+        up: false,
+      });
+    }
+  }
+
   private resetGame() {
+    this.generateCards();
     this.scramble();
     this.upCount = 0;
     this.lastFlipIndex = -1;
@@ -98,15 +148,6 @@ export default class Play extends Vue {
     } else if (this.$vuetify.breakpoint.mdAndUp) {
       this.config = this.configMd;
     }
-  }
-
-  @Watch('instance', { immediate: true })
-  public onInstanceChanged(newValue: number, oldValue: number) {
-    if (newValue === oldValue) {
-      return;
-    }
-    console.log('game instance changed', this.instance);
-    this.resetGame();
   }
 
   public get victory() {
