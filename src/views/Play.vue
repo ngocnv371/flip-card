@@ -68,7 +68,7 @@ export default class Play extends Vue {
     card: { 0: 140, 1: 140, 2: 140, 3: 100, 4: 80, 5: 80 },
   };
   public configMd = {
-    card: { 0: 260, 1: 260, 2: 260, 3: 200, 4: 160, 5: 160 },
+    card: { 0: 260, 1: 260, 2: 220, 3: 200, 4: 160, 5: 160 },
   };
   public config = this.configMd;
 
@@ -128,8 +128,11 @@ export default class Play extends Vue {
     this.lastFlipIndex = -1;
   }
 
-  public mounted() {
+  public created() {
     this.resetGame();
+  }
+
+  public mounted() {
     this.resolveConfig();
   }
 

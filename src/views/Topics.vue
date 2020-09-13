@@ -40,7 +40,7 @@ export default class Topics extends Vue {
   };
   public configSm = {
     topic: {
-      size: 300,
+      size: 250,
     },
   };
   public configXs = {
