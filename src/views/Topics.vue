@@ -35,17 +35,17 @@ import VectorImage from '../components/VectorImage.vue';
 export default class Topics extends Vue {
   public configMd = {
     topic: {
-      size: 300,
+      size: 400,
     },
   };
   public configSm = {
     topic: {
-      size: 200,
+      size: 300,
     },
   };
   public configXs = {
     topic: {
-      size: 100,
+      size: 200,
     },
   };
   public config = this.configMd;

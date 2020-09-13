@@ -12,7 +12,7 @@
             <FlipCard
               :card="cards[(row - 1) * cols + col - 1].name"
               :up="cards[(row - 1) * cols + col - 1].up"
-              :size="config.card.size"
+              :size="config.card[level]"
               @flip="flip((row - 1) * cols + col - 1)"
             />
           </div>
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import FlipCard from '../components/FlipCard.vue';
 import VictoryModal from '../components/VictoryModal.vue';
 import { Mutation, State } from 'vuex-class';
@@ -59,23 +59,16 @@ export default class Play extends Vue {
   public cols = 1;
   public countMap = [4, 6, 8, 12, 16, 24];
 
-  public cards = [
-    { name: 'banana', up: false },
-    { name: 'banana', up: false },
-    { name: 'apple', up: false },
-    { name: 'apple', up: false },
-    { name: 'watermelon', up: false },
-    { name: 'watermelon', up: false },
-  ];
+  public cards: { name: string; up: boolean }[] = [];
 
   public configXs = {
-    card: { size: 100 },
+    card: { 0: 120, 1: 120, 2: 120, 3: 90, 4: 70, 5: 70 },
   };
   public configSm = {
-    card: { size: 130 },
+    card: { 0: 140, 1: 140, 2: 140, 3: 100, 4: 80, 5: 80 },
   };
   public configMd = {
-    card: { size: 200 },
+    card: { 0: 260, 1: 260, 2: 260, 3: 200, 4: 160, 5: 160 },
   };
   public config = this.configMd;
 

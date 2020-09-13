@@ -34,7 +34,7 @@ export default Vue.extend({
 
   data: () => ({
     mode: 'home',
-    level: 0,
+    level: 2,
   }),
 });
 </script>
