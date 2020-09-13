@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="d-flex pa-1"
+    class="d-flex pa-1 pa-md-3"
     :width="size"
     :height="size"
     @click="handleFlip"
