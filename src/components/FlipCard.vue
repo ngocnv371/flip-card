@@ -6,7 +6,11 @@
     @click="handleFlip"
     :elevation="10"
   >
-    <VectorImage class="ma-3" :icon="up ? card : 'question-mark'"></VectorImage>
+    <VectorImage
+      class="ma-3"
+      :icon="up ? card : 'question-mark'"
+      :size="iconSize"
+    ></VectorImage>
   </v-card>
 </template>
 
@@ -29,8 +33,12 @@ export default class FlipCard extends Vue {
   @Prop({ default: false })
   public up!: boolean;
 
-  @Prop({ default: 100 })
+  @Prop({ default: 130 })
   public size!: number;
+
+  public get iconSize() {
+    return this.size > 130 ? undefined : 100;
+  }
 
   public handleFlip() {
     this.$emit('flip', this.card);

@@ -62,7 +62,7 @@ export default class Play extends Vue {
   ];
 
   public configXs = {
-    card: { size: 130 },
+    card: { size: 100 },
   };
   public configSm = {
     card: { size: 130 },

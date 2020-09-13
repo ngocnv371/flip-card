@@ -15,22 +15,23 @@
       <v-card-actions>
         <v-btn
           color="success"
-          x-large
+          fab
           :width="config.home.size"
           :height="config.home.size"
           @click="$emit('end')"
         >
-          <v-icon :size="config.home.size">mdi-home</v-icon>
+          <v-icon :size="config.home.icon.size">mdi-home</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
-          x-large
+          fab
+          class="animate__animated animate__tada animate__infinite"
           :width="config.play.size"
           :height="config.play.size"
           @click="resetGame"
         >
-          <v-icon :size="config.play.size">mdi-play</v-icon>
+          <v-icon :size="config.play.icon.size">mdi-play</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -68,21 +69,33 @@ export default class VictoryModal extends Vue {
     },
     home: {
       size: 50,
+      icon: {
+        size: 40,
+      },
     },
     play: {
       size: 50,
+      icon: {
+        size: 40,
+      },
     },
   };
   public configSm = {
     width: 400,
     badge: {
-      size: 200,
+      size: 180,
     },
     home: {
-      size: 100,
+      size: 80,
+      icon: {
+        size: 60,
+      },
     },
     play: {
-      size: 100,
+      size: 80,
+      icon: {
+        size: 60,
+      },
     },
   };
   public configMd = {
@@ -92,9 +105,15 @@ export default class VictoryModal extends Vue {
     },
     home: {
       size: 150,
+      icon: {
+        size: 110,
+      },
     },
     play: {
       size: 150,
+      icon: {
+        size: 110,
+      },
     },
   };
   public config = this.configMd;
