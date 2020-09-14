@@ -32,12 +32,15 @@ export default class FlipCard extends Vue {
   @Prop({ default: 100 })
   public size!: number;
 
+  private audio: HTMLAudioElement | null = null;
+
   public handleFlip() {
     this.$emit('flip', this.card);
   }
 
   public mounted() {
     this.$el.id = `card-${this.card}-${Math.round(Math.random() * 1000)}`;
+    this.audio = new Audio(require(`../assets/pron/${this.card}.mp3`));
   }
 
   @Watch('up', { immediate: true })
@@ -46,6 +49,9 @@ export default class FlipCard extends Vue {
       return;
     }
     animateCSS('#' + this.$el.id, 'flipInY');
+    if (this.audio && this.up) {
+      this.audio.play();
+    }
   }
 }
 </script>

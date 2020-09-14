@@ -83,6 +83,7 @@ export default class Play extends Vue {
     card: { 0: 260, 1: 260, 2: 220, 3: 200, 4: 160, 5: 160 },
   };
   public config = this.configMd;
+  private yay: HTMLAudioElement | null = null;
 
   private scramble() {
     this.cards = this.cards.sort(() => Math.random() - Math.random());
@@ -112,7 +113,6 @@ export default class Play extends Vue {
       'cake',
       'carrot',
       'cheese',
-      'cherry-blossom',
       'cherry',
       'cookie',
       'crab',
@@ -157,6 +157,7 @@ export default class Play extends Vue {
 
   public mounted() {
     this.resolveConfig();
+    this.yay = new Audio(require(`../assets/sounds/yay.mp3`));
   }
 
   private resolveConfig() {
@@ -185,6 +186,9 @@ export default class Play extends Vue {
         this.cards[index].up = true;
         this.lastFlipIndex = -1;
         console.log('score!');
+        if (this.yay) {
+          this.yay.play();
+        }
         this.addScore();
         this.upCount += 2;
         return;
