@@ -22,6 +22,7 @@
               :card="cards[(row - 1) * cols + col - 1].name"
               :up="cards[(row - 1) * cols + col - 1].up"
               :size="config.card[level]"
+              :key="`card-${cards[(row - 1) * cols + col - 1].name}`"
               @flip="flip((row - 1) * cols + col - 1)"
             />
           </div>
@@ -30,7 +31,12 @@
       </div>
       <v-spacer></v-spacer>
     </div>
-    <VictoryModal v-model="victory" @end="$emit('end')" />
+    <VictoryModal
+      v-model="victory"
+      :score="score"
+      @end="$emit('end')"
+      @play="resetGame"
+    />
   </div>
 </template>
 

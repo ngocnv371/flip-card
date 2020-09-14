@@ -29,7 +29,7 @@
           class="animate__animated animate__tada animate__infinite"
           :width="config.play.size"
           :height="config.play.size"
-          @click="resetGame"
+          @click="$emit('play')"
         >
           <v-icon :size="config.play.icon.size">mdi-play</v-icon>
         </v-btn>
@@ -39,10 +39,8 @@
 </template>
 
 <script lang="ts">
-import { GameState } from '@/models';
 import Vue from 'vue';
-import { Component, Model, Watch } from 'vue-property-decorator';
-import { State, Mutation } from 'vuex-class';
+import { Component, Model, Prop, Watch } from 'vue-property-decorator';
 import StarBadge from './StarBadge.vue';
 
 @Component({
@@ -55,11 +53,8 @@ export default class VictoryModal extends Vue {
   @Model('input')
   public show!: boolean;
 
-  @State((state: GameState) => state.score)
+  @Prop({ required: true })
   public score!: number;
-
-  @Mutation('reset')
-  public resetGame!: () => void;
 
   public localShow = false;
   public configXs = {
