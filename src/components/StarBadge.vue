@@ -2,7 +2,7 @@
   <div class="d-flex">
     <v-spacer></v-spacer>
     <div class="d-flex">
-      <VectorImage icon="achievement" :size="size" />
+      <VectorImage image="achievement" :size="size" />
     </div>
     <v-spacer></v-spacer>
   </div>

@@ -9,7 +9,7 @@
         >
           <VectorImage
             class="d-inline-block"
-            icon="baby"
+            image="baby"
             :size="config.title.icon.size"
           />
           Baby Flip

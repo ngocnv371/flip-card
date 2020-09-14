@@ -6,7 +6,7 @@
     @click="handleFlip"
     :elevation="10"
   >
-    <VectorImage contain :icon="up ? card : 'question-mark'"></VectorImage>
+    <VectorImage contain :word="up" :image="up ? card : 'question-mark'" />
   </v-card>
 </template>
 

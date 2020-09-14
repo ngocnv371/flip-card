@@ -22,7 +22,7 @@
           class="flex d-flex flex-column"
           @click="$emit('play', topic)"
         >
-          <VectorImage :icon="topic.icon" class="ma-3 flex" />
+          <VectorImage word :image="topic.icon" class="ma-3 flex" />
           <v-card-title class="d-flex">
             <h1 class="flex">{{ topic.name }}</h1>
           </v-card-title>

@@ -13,14 +13,20 @@ import { Component, Prop } from 'vue-property-decorator';
 })
 export default class VectorImage extends Vue {
   @Prop({ required: true })
-  public icon!: string;
+  public image!: string;
+
+  @Prop({ default: false, type: Boolean })
+  public word!: boolean;
 
   @Prop()
   public size!: number | null;
 
   public get url() {
-    const context = require.context('../assets/icons/', false, /\.svg$/);
-    return context(`./${this.icon}.svg`);
+    const images = require.context(`../assets/images/`, false, /\.svg$/);
+    const words = require.context(`../assets/words/`, false, /\.svg$/);
+    return this.word
+      ? words(`./${this.image}.svg`)
+      : images(`./${this.image}.svg`);
   }
 }
 </script>
