@@ -3,14 +3,14 @@
     <v-main>
       <Play
         v-if="mode === 'play'"
-        :level="level"
+        :data="level"
         @end="mode = 'home'"
         @back="mode = 'topics'"
       />
       <Topics
         v-else-if="mode === 'topics'"
         @back="mode = 'home'"
-        @play="mode = 'play'"
+        @play="startPlay"
       />
       <Home v-else @play="mode = 'topics'" />
     </v-main>
@@ -19,6 +19,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapActions } from 'vuex';
+import { Topic } from './models';
 import Home from './views/Home.vue';
 import Play from './views/Play.vue';
 import Topics from './views/Topics.vue';
@@ -34,7 +36,15 @@ export default Vue.extend({
 
   data: () => ({
     mode: 'home',
-    level: 2,
+    level: null,
   }),
+
+  methods: {
+    ...mapActions(['start']),
+    async startPlay(topic: Topic) {
+      this.level = await this.start(topic);
+      this.mode = 'play';
+    },
+  },
 });
 </script>

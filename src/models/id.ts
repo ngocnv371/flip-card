@@ -6,12 +6,3 @@ export interface Identifiable {
   description?: string;
   icon?: string;
 }
-
-export interface GameState {
-  score: number;
-  instance: number;
-}
-
-export interface FlipState {
-  score: number;
-}

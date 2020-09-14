@@ -16,14 +16,14 @@
       <v-spacer></v-spacer>
       <div class="grid-outer-container d-flex flex-column">
         <v-spacer></v-spacer>
-        <div class="d-flex" v-for="row of rows" :key="`row-${row}`">
-          <div class="d-flex pa-1" v-for="col of cols" :key="`col-${col}`">
+        <div class="d-flex" v-for="row of data.rows" :key="`row-${row}`">
+          <div class="d-flex pa-1" v-for="col of data.cols" :key="`col-${col}`">
             <FlipCard
-              :card="cards[(row - 1) * cols + col - 1].name"
-              :up="cards[(row - 1) * cols + col - 1].up"
-              :size="config.card[level]"
-              :key="`card-${cards[(row - 1) * cols + col - 1].name}`"
-              @flip="flip((row - 1) * cols + col - 1)"
+              :card="cards[(row - 1) * data.cols + col - 1].name"
+              :up="cards[(row - 1) * data.cols + col - 1].up"
+              :size="config.card[data.level]"
+              :key="`card-${cards[(row - 1) * data.cols + col - 1].name}`"
+              @flip="flip((row - 1) * data.cols + col - 1)"
             />
           </div>
         </div>
@@ -31,21 +31,15 @@
       </div>
       <v-spacer></v-spacer>
     </div>
-    <VictoryModal
-      v-model="victory"
-      :score="score"
-      @end="$emit('end')"
-      @play="resetGame"
-    />
+    <VictoryModal v-model="victory" @end="$emit('end')" @play="resetGame" />
   </div>
 </template>
 
 <script lang="ts">
+import { LevelData } from '@/models';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import FlipCard from '../components/FlipCard.vue';
 import VictoryModal from '../components/VictoryModal.vue';
-import { Mutation, State } from 'vuex-class';
-import { GameState } from '@/models';
 
 @Component({
   name: 'Play',
@@ -55,24 +49,11 @@ import { GameState } from '@/models';
   },
 })
 export default class Play extends Vue {
-  @State((state: GameState) => state.score)
-  public score!: number;
-
-  @State((state: GameState) => state.instance)
-  public instance!: number;
-
-  @Mutation('addScore')
-  public addScore!: () => void;
-
   @Prop({ required: true })
-  public level!: number;
+  public data!: LevelData;
 
   private lastFlipIndex = -1;
   private count = 0;
-  private upCount = 0;
-  public rows = 1;
-  public cols = 1;
-  public countMap = [4, 6, 8, 12, 16, 24];
 
   public cards: { name: string; up: boolean }[] = [];
 
@@ -91,69 +72,9 @@ export default class Play extends Vue {
   public config = this.configMd;
   private yay: HTMLAudioElement | null = null;
 
-  private scramble() {
-    this.cards = this.cards.sort(() => Math.random() - Math.random());
-    for (const card of this.cards) {
-      card.up = false;
-    }
-  }
-
-  private generateGrid() {
-    const count = this.countMap[this.level];
-    this.count = count;
-    const mid = Math.floor(Math.sqrt(count));
-    const remain = Math.floor(count / mid);
-    if (mid > remain) {
-      this.rows = remain;
-      this.cols = mid;
-    } else {
-      this.rows = mid;
-      this.cols = remain;
-    }
-  }
-
-  private generateCards() {
-    const names = [
-      'apple',
-      'banana',
-      'cake',
-      'carrot',
-      'cheese',
-      'cherry',
-      'cookie',
-      'crab',
-      'cupcake',
-      'dolphin',
-      'donut',
-      'fish',
-      'jellyfish',
-      'lemon',
-      'octopus',
-      'orange',
-      'pineapple',
-      'starfish',
-      'strawberry',
-      'sunflower',
-      'watermelon',
-    ].sort(() => Math.random() - Math.random());
-    this.cards = [];
-    this.generateGrid();
-    for (let index = 0; index < this.count / 2; index++) {
-      this.cards.push({
-        name: names[index],
-        up: false,
-      });
-      this.cards.push({
-        name: names[index],
-        up: false,
-      });
-    }
-  }
-
   private resetGame() {
-    this.generateCards();
-    this.scramble();
-    this.upCount = 0;
+    this.cards = this.data.cards.map(c => ({ name: c, up: false }));
+    this.count = 0;
     this.lastFlipIndex = -1;
   }
 
@@ -177,7 +98,7 @@ export default class Play extends Vue {
   }
 
   public get victory() {
-    return this.upCount && this.upCount === this.cards.length;
+    return this.count && this.count === this.data.cards.length;
   }
 
   public flip(index: number) {
@@ -191,12 +112,11 @@ export default class Play extends Vue {
       if (this.cards[this.lastFlipIndex].name === this.cards[index].name) {
         this.cards[index].up = true;
         this.lastFlipIndex = -1;
-        console.log('score!');
         if (this.yay) {
           this.yay.play();
         }
-        this.addScore();
-        this.upCount += 2;
+        this.count += 2;
+        this.$emit('score');
         return;
       } else {
         this.cards[this.lastFlipIndex].up = false;

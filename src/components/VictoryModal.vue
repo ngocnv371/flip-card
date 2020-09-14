@@ -11,7 +11,7 @@
       flat
       style="background: transparent !important;"
     >
-      <StarBadge :score="score" class="pt-5" :size="config.badge.size" />
+      <StarBadge class="pt-5" :size="config.badge.size" />
       <v-card-actions>
         <v-btn
           color="success"
@@ -52,9 +52,6 @@ import StarBadge from './StarBadge.vue';
 export default class VictoryModal extends Vue {
   @Model('input')
   public show!: boolean;
-
-  @Prop({ required: true })
-  public score!: number;
 
   public localShow = false;
   public configXs = {

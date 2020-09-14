@@ -16,7 +16,7 @@
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div class="d-flex flex text-center">
-      <div class="flex d-flex ma-3" v-for="topic of topics" :key="topic.name">
+      <div class="flex d-flex ma-3" v-for="topic of topics" :key="topic.id">
         <v-card
           :width="config.topic.size"
           class="flex d-flex flex-column"
@@ -35,13 +35,17 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import VectorImage from '../components/VectorImage.vue';
-
+import { Getter } from 'vuex-class';
+import { Topic } from '@/models';
 @Component({
   components: {
     VectorImage,
   },
 })
 export default class Topics extends Vue {
+  @Getter('topics')
+  public topics!: Topic[];
+
   public configMd = {
     back: { size: 80 },
     topic: {
@@ -61,41 +65,6 @@ export default class Topics extends Vue {
     },
   };
   public config = this.configMd;
-
-  public topics = [
-    {
-      icon: 'dolphin',
-      name: 'Animals',
-    },
-    {
-      icon: 'cake',
-      name: 'Food',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits 2',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits 3',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits 4',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits 5',
-    },
-    {
-      icon: 'orange',
-      name: 'Fruits 6',
-    },
-  ];
 
   public mounted() {
     this.resolveConfig();
