@@ -31,13 +31,14 @@
       </div>
       <v-spacer></v-spacer>
     </div>
-    <VictoryModal v-model="victory" @end="$emit('end')" @play="resetGame" />
+    <VictoryModal v-model="victory" @end="$emit('end')" @play="replay" />
   </div>
 </template>
 
 <script lang="ts">
 import { LevelData } from '@/models';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
+import { Action, Getter } from 'vuex-class';
 import FlipCard from '../components/FlipCard.vue';
 import VictoryModal from '../components/VictoryModal.vue';
 
@@ -49,8 +50,11 @@ import VictoryModal from '../components/VictoryModal.vue';
   },
 })
 export default class Play extends Vue {
-  @Prop({ required: true })
+  @Getter('level')
   public data!: LevelData;
+
+  @Action('replay')
+  public replayGame!: () => void;
 
   private lastFlipIndex = -1;
   private count = 0;
@@ -99,6 +103,11 @@ export default class Play extends Vue {
 
   public get victory() {
     return this.count && this.count === this.data.cards.length;
+  }
+
+  public replay() {
+    this.replayGame();
+    this.resetGame();
   }
 
   public flip(index: number) {

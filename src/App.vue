@@ -3,7 +3,6 @@
     <v-main>
       <Play
         v-if="mode === 'play'"
-        :data="level"
         @end="mode = 'home'"
         @back="mode = 'topics'"
       />
@@ -36,13 +35,12 @@ export default Vue.extend({
 
   data: () => ({
     mode: 'home',
-    level: null,
   }),
 
   methods: {
     ...mapActions(['start']),
     async startPlay(topic: Topic) {
-      this.level = await this.start(topic);
+      await this.start(topic);
       this.mode = 'play';
     },
   },

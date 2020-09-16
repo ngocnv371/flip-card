@@ -3,6 +3,7 @@ import { Identifiable } from './id';
 export * from './id';
 
 export interface LevelData {
+  topicId: string;
   level: number;
   rows: number;
   cols: number;
@@ -19,6 +20,7 @@ export interface GameState {
   score: number;
   instance: number;
   topics: Topic[];
+  level: LevelData | null;
 }
 
 export interface FlipState {

@@ -41,24 +41,25 @@ const topics: Topic[] = [
   },
 ];
 
-function generateLevelData(level: number, words: string[]): LevelData {
+function generateLevelData(topic: Topic): LevelData {
   const cardCountMap = [4, 6, 8, 12, 16, 24];
   const count =
-    level >= cardCountMap.length
+  topic.level >= cardCountMap.length
       ? cardCountMap[cardCountMap.length - 1]
-      : cardCountMap[level];
+      : cardCountMap[topic.level];
   // generate grid
   const mid = Math.floor(Math.sqrt(count));
   const remain = Math.floor(count / mid);
 
   // generate words
-  const orderedWords = words.sort(() => Math.random() - Math.random());
+  const orderedWords = [...topic.words].sort(() => Math.random() - Math.random());
   const cards = [];
   for (let index = 0; index < count / 2; index++) {
     cards.push(orderedWords[index], orderedWords[index]);
   }
   const data: LevelData = {
-    level,
+    topicId: topic.id,
+    level: topic.level,
     rows: mid > remain ? remain : mid,
     cols: mid > remain ? mid : remain,
     cards,
@@ -71,10 +72,14 @@ export default new Vuex.Store<GameState>({
     score: 0,
     instance: 0,
     topics,
+    level: null,
   },
   getters: {
     topics(state) {
       return state.topics;
+    },
+    level(state) {
+      return state.level;
     }
   },
   mutations: {
@@ -86,6 +91,9 @@ export default new Vuex.Store<GameState>({
     addScore(state) {
       state.score += 1;
     },
+    setLevel(state, payload) {
+      state.level = payload;
+    }
   },
   actions: {
     start(context, payload) {
@@ -94,8 +102,16 @@ export default new Vuex.Store<GameState>({
       if (!topic) {
         throw new Error(`Topic #${id} not found`);
       }
-      const data = generateLevelData(topic.level, topic.words);
+      const data = generateLevelData(topic);
+      context.commit('setLevel', data);
       return data;
+    },
+    replay(context, payload) {
+      if (!context.state.level) {
+        throw new Error('Can not Replay before player have finished a level');
+      }
+      const topicId = context.state.level.topicId;
+      context.dispatch('start', { id: topicId });
     },
     save(context, payload) {
       //
