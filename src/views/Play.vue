@@ -51,7 +51,7 @@ import VictoryModal from '../components/VictoryModal.vue';
 })
 export default class Play extends Vue {
   @Getter('level')
-  public data!: LevelData;
+  public sourceData!: LevelData;
 
   @Action('replay')
   public replayGame!: () => Promise<void>;
@@ -61,6 +61,8 @@ export default class Play extends Vue {
 
   private lastFlipIndex = -1;
   private count = 0;
+  // local cached data
+  public data: LevelData | null = null;
 
   public cards: { name: string; up: boolean }[] = [];
 
@@ -80,7 +82,8 @@ export default class Play extends Vue {
   private yay: HTMLAudioElement | null = null;
 
   private resetGame() {
-    this.cards = this.data.cards.map(c => ({ name: c, up: false }));
+    this.data = { ...this.sourceData };
+    this.cards = this.sourceData.cards.map(c => ({ name: c, up: false }));
     this.count = 0;
     this.lastFlipIndex = -1;
   }
@@ -105,7 +108,7 @@ export default class Play extends Vue {
   }
 
   public get victory() {
-    return this.count && this.count === this.data.cards.length;
+    return this.count && this.count === this.sourceData.cards.length;
   }
 
   @Watch('victory')
