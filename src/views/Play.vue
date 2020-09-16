@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { LevelData } from '@/models';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Action, Getter } from 'vuex-class';
 import FlipCard from '../components/FlipCard.vue';
 import VictoryModal from '../components/VictoryModal.vue';
@@ -54,7 +54,10 @@ export default class Play extends Vue {
   public data!: LevelData;
 
   @Action('replay')
-  public replayGame!: () => void;
+  public replayGame!: () => Promise<void>;
+
+  @Action('save')
+  public saveGame!: () => void;
 
   private lastFlipIndex = -1;
   private count = 0;
@@ -105,8 +108,15 @@ export default class Play extends Vue {
     return this.count && this.count === this.data.cards.length;
   }
 
-  public replay() {
-    this.replayGame();
+  @Watch('victory')
+  public onVictory() {
+    if (this.victory) {
+      this.saveGame();
+    }
+  }
+
+  public async replay() {
+    await this.replayGame();
     this.resetGame();
   }
 

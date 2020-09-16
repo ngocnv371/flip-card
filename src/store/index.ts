@@ -41,18 +41,22 @@ const topics: Topic[] = [
   },
 ];
 
+const CARD_COUNT_PER_LEVEL = [4, 6, 8, 12, 16, 24];
+const GAME_COUNT_PER_LEVEL = [2, 4, 6, 10, 16, 26];
+
 function generateLevelData(topic: Topic): LevelData {
-  const cardCountMap = [4, 6, 8, 12, 16, 24];
   const count =
-  topic.level >= cardCountMap.length
-      ? cardCountMap[cardCountMap.length - 1]
-      : cardCountMap[topic.level];
+    topic.level >= CARD_COUNT_PER_LEVEL.length
+      ? CARD_COUNT_PER_LEVEL[CARD_COUNT_PER_LEVEL.length - 1]
+      : CARD_COUNT_PER_LEVEL[topic.level];
   // generate grid
   const mid = Math.floor(Math.sqrt(count));
   const remain = Math.floor(count / mid);
 
   // generate words
-  const orderedWords = [...topic.words].sort(() => Math.random() - Math.random());
+  const orderedWords = [...topic.words].sort(
+    () => Math.random() - Math.random()
+  );
   const cards = [];
   for (let index = 0; index < count / 2; index++) {
     cards.push(orderedWords[index], orderedWords[index]);
@@ -62,7 +66,7 @@ function generateLevelData(topic: Topic): LevelData {
     level: topic.level,
     rows: mid > remain ? remain : mid,
     cols: mid > remain ? mid : remain,
-    cards,
+    cards: cards.sort(() => Math.random() - Math.random()),
   };
   return data;
 }
@@ -80,7 +84,7 @@ export default new Vuex.Store<GameState>({
     },
     level(state) {
       return state.level;
-    }
+    },
   },
   mutations: {
     reset(state) {
@@ -93,7 +97,19 @@ export default new Vuex.Store<GameState>({
     },
     setLevel(state, payload) {
       state.level = payload;
-    }
+    },
+    updateTopic(state, payload) {
+      const { id } = payload;
+      const topic = state.topics.find(t => t.id === id);
+      if (!topic) {
+        throw new Error(`Topic #${id} not found`);
+      }
+      topic.played++;
+      const index = GAME_COUNT_PER_LEVEL.findIndex(g => g >= topic.played);
+      if (index >= 0) {
+        topic.level = index + 1;
+      }
+    },
   },
   actions: {
     start(context, payload) {
@@ -111,10 +127,15 @@ export default new Vuex.Store<GameState>({
         throw new Error('Can not Replay before player have finished a level');
       }
       const topicId = context.state.level.topicId;
-      context.dispatch('start', { id: topicId });
+      return context.dispatch('start', { id: topicId });
     },
     save(context, payload) {
-      //
+      if (!context.state.level) {
+        throw new Error('Can not Save before player have finished a level');
+      }
+      context.commit('updateTopic', {
+        id: context.state.level.topicId,
+      });
     },
   },
   modules: {},
