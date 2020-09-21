@@ -44,5 +44,9 @@ export default Vue.extend({
       this.mode = 'play';
     },
   },
+
+  created: () => {
+    screen.orientation.lock('landscape');
+  },
 });
 </script>
