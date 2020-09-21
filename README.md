@@ -26,3 +26,8 @@ At the moment, all topics/words are defined statically in `/src/store/index.ts`.
 The `svg` graphic for a word can be find and download for free at https://www.flaticon.com/
 The pronunciation can be download from https://www.oxfordlearnersdictionaries.com/ with help from a little script from `/tools/Download US Pronounce At Oxford Dict.user.js`. This script is installed in chrome's pluggin Tampermonkey.
 
+### How to publish to github pages
+* Change to `gh-pages` branch
+* Run `npm run build`
+* Commit the changes
+* Push change to subtree `git subtree push --prefix dist origin gh-pages`
