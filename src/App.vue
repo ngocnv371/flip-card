@@ -6,6 +6,7 @@
         @end="mode = 'home'"
         @back="mode = 'topics'"
       />
+      <Link v-else-if="mode === 'link'" />
       <Topics
         v-else-if="mode === 'topics'"
         @back="mode = 'home'"
@@ -23,18 +24,20 @@ import { Topic } from './models';
 import Home from './views/Home.vue';
 import Play from './views/Play.vue';
 import Topics from './views/Topics.vue';
+import Link from './views/Link.vue';
 
 export default Vue.extend({
   name: 'App',
 
   components: {
+    Link,
     Topics,
     Home,
     Play,
   },
 
   data: () => ({
-    mode: 'home',
+    mode: 'link',
   }),
 
   methods: {
