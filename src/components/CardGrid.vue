@@ -2,12 +2,13 @@
   <div class="card-grid" v-if="grid">
     <div class="d-flex" v-for="row of grid.rows" :key="`row-${row}`">
       <div class="d-flex pa-1" v-for="col of grid.cols" :key="`col-${col}`">
-        <VectorImage
-          :word="!!grid.cells[(row - 1) * grid.cols + col - 1]"
-          :image="grid.cells[(row - 1) * grid.cols + col - 1] || 'blank'"
-          :key="`${(row - 1) * grid.cols + col - 1}`"
-          :size="100"
-          @click="onSelectCard((row - 1) * grid.cols + col - 1)"
+        <ConnectCard
+          :value="grid.cells[(row - 1) * grid.cols + col - 1]"
+          :index="(row - 1) * grid.cols + col - 1"
+          :key="(row - 1) * grid.cols + col - 1"
+          :selected="isSelected((row - 1) * grid.cols + col - 1)"
+          :reachable="isReachable((row - 1) * grid.cols + col - 1)"
+          @click="onSelectCard"
         />
       </div>
     </div>
@@ -23,7 +24,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
-import VectorImage from './VectorImage.vue';
+import ConnectCard from './ConnectCard.vue';
 import { Getter } from 'vuex-class';
 import { Topic } from '@/models';
 
@@ -48,6 +49,10 @@ class Grid {
 
   public get cells() {
     return this._cells;
+  }
+
+  public get selectedIndex() {
+    return this._selectedIndex;
   }
 
   constructor(_rows: number, _cols: number, words: string[]) {
@@ -244,7 +249,7 @@ class Grid {
 @Component({
   name: 'CardGrid',
   components: {
-    VectorImage,
+    ConnectCard,
   },
 })
 export default class CardGrid extends Vue {
@@ -272,11 +277,12 @@ export default class CardGrid extends Vue {
     this.reachableCells.push(...this.grid.getReachableCells());
   }
 
-  reachable(index: number) {
-    if (!this.grid) {
-      return false;
-    }
+  isReachable(index: number) {
     return this.reachableCells.includes(index);
+  }
+
+  isSelected(index: number) {
+    return index === this.grid?.selectedIndex;
   }
 }
 </script>
