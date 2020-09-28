@@ -5,14 +5,7 @@
         <VectorImage
           :word="!!grid.cells[(row - 1) * grid.cols + col - 1]"
           :image="grid.cells[(row - 1) * grid.cols + col - 1] || 'blank'"
-          :key="
-            `card-${(row - 1) * grid.cols + col - 1}-${
-              grid.cells[(row - 1) * grid.cols + col - 1]
-            }`
-          "
-          :class="{
-            reachable: reachable(grid.cells[(row - 1) * grid.cols + col - 1]),
-          }"
+          :key="`${(row - 1) * grid.cols + col - 1}`"
           :size="100"
           @click="onSelectCard((row - 1) * grid.cols + col - 1)"
         />
@@ -69,7 +62,8 @@ class Grid {
     for (let i = 0; i < Math.floor(num / 2); i++) {
       const randomIndex = Math.floor(Math.random() * words.length);
       bucket.push(words[randomIndex]);
-      bucket.push(words[randomIndex]);
+      // HACK: pretend that half of them is empty (already solved)
+      bucket.push('');
     }
     bucket.sort(() => Math.random() - Math.random());
     return bucket;
@@ -85,7 +79,7 @@ class Grid {
       this._cells.push('');
       for (let col = 1; col < this.cols - 1; col++) {
         const word = pool.pop();
-        if (!word) {
+        if (word === undefined) {
           return;
         }
         this._cells.push(word);
@@ -119,39 +113,75 @@ class Grid {
     this._selectedIndex = index;
   }
 
-  private marchUp(position: Position): Position {
+  private marchUp(position: Position, depth = 3): Position[] {
+    if (!depth) {
+      return [];
+    }
+    const bucket = [];
     let up = this.up(position);
     while (!this.getValue(up) && !this.isOutOfBound(up)) {
+      bucket.push(...this.marchLeft(up, depth - 1));
+      bucket.push(...this.marchRight(up, depth - 1));
       up = this.up(up);
     }
-    return up;
+    if (this.getValue(up)) {
+      bucket.push(up);
+    }
+    return bucket;
   }
 
-  private marchDown(position: Position): Position {
+  private marchDown(position: Position, depth = 3): Position[] {
+    if (!depth) {
+      return [];
+    }
+    const bucket = [];
     let down = this.down(position);
     while (!this.getValue(down) && !this.isOutOfBound(down)) {
+      bucket.push(...this.marchLeft(down, depth - 1));
+      bucket.push(...this.marchRight(down, depth - 1));
       down = this.down(down);
     }
-    return down;
+    if (this.getValue(down)) {
+      bucket.push(down);
+    }
+    return bucket;
   }
 
-  private marchLeft(position: Position): Position {
+  private marchLeft(position: Position, depth = 3): Position[] {
+    if (!depth) {
+      return [];
+    }
+    const bucket = [];
     let left = this.left(position);
     while (!this.getValue(left) && !this.isOutOfBound(left)) {
-      left = this.left(left);
+      bucket.push(...this.marchUp(left, depth - 1));
+      bucket.push(...this.marchDown(left, depth - 1));
+      left = this.right(left);
     }
-    return left;
+    if (this.getValue(left)) {
+      bucket.push(left);
+    }
+    return bucket;
   }
 
-  private marchRight(position: Position): Position {
+  private marchRight(position: Position, depth = 3): Position[] {
+    if (!depth) {
+      return [];
+    }
+    const bucket = [];
     let right = this.right(position);
     while (!this.getValue(right) && !this.isOutOfBound(right)) {
+      bucket.push(...this.marchUp(right, depth - 1));
+      bucket.push(...this.marchDown(right, depth - 1));
       right = this.right(right);
     }
-    return right;
+    if (this.getValue(right)) {
+      bucket.push(right);
+    }
+    return bucket;
   }
 
-  public get reachableCells(): number[] {
+  public getReachableCells(): number[] {
     if (this._selectedIndex < 0) {
       return [];
     }
@@ -160,16 +190,17 @@ class Grid {
     const position = this.getPosition(this._selectedIndex);
     // from selected position
     // march up
-    targets.push(this.marchUp(position));
+    targets.push(...this.marchUp(position));
     // march down
-    targets.push(this.marchDown(position));
+    targets.push(...this.marchDown(position));
     // march left
-    targets.push(this.marchLeft(position));
+    targets.push(...this.marchLeft(position));
     // march right
-    targets.push(this.marchRight(position));
+    targets.push(...this.marchRight(position));
     return targets
       .filter(t => !this.isOutOfBound(t))
-      .map(t => this.getIndex(t));
+      .map(t => this.getIndex(t))
+      .sort();
   }
 
   private isOutOfBound(position: Position) {
@@ -222,9 +253,7 @@ export default class CardGrid extends Vue {
 
   public grid: Grid | null = null;
 
-  public get reachableCells() {
-    return this.grid?.reachableCells;
-  }
+  public reachableCells: number[] = [];
 
   public created() {
     const topicIndex = 0;
@@ -238,13 +267,16 @@ export default class CardGrid extends Vue {
       return;
     }
     this.grid.select(index);
+    console.log('click: ' + index);
+    this.reachableCells.length = 0;
+    this.reachableCells.push(...this.grid.getReachableCells());
   }
 
   reachable(index: number) {
     if (!this.grid) {
       return false;
     }
-    return this.grid.reachableCells.includes(index);
+    return this.reachableCells.includes(index);
   }
 }
 </script>
