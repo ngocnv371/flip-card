@@ -63,14 +63,38 @@ class Grid {
     this.generateCells(words);
   }
 
-  private generateCells(words: string[]) {
-    this._cells = [];
-    for (let i = 0; i < Math.floor((this._rows * this._cols) / 2); i++) {
+  private generateWordPool(words: string[]) {
+    const bucket: string[] = [];
+    const num = (this._rows - 1) * (this.cols - 1);
+    for (let i = 0; i < Math.floor(num / 2); i++) {
       const randomIndex = Math.floor(Math.random() * words.length);
-      this._cells.push(words[randomIndex]);
+      bucket.push(words[randomIndex]);
+      bucket.push(words[randomIndex]);
+    }
+    bucket.sort(() => Math.random() - Math.random());
+    return bucket;
+  }
+
+  private generateCells(words: string[]) {
+    const pool = this.generateWordPool(words);
+    this._cells = [];
+    for (let i = 0; i < this.cols; i++) {
       this._cells.push('');
     }
-    this._cells.sort(() => Math.random() - Math.random());
+    for (let row = 1; row < this.rows - 1; row++) {
+      this._cells.push('');
+      for (let col = 1; col < this.cols - 1; col++) {
+        const word = pool.pop();
+        if (!word) {
+          return;
+        }
+        this._cells.push(word);
+      }
+      this._cells.push('');
+    }
+    for (let i = 0; i < this.cols; i++) {
+      this._cells.push('');
+    }
   }
 
   private getPosition(index: number): Position {
@@ -205,7 +229,7 @@ export default class CardGrid extends Vue {
   public created() {
     const topicIndex = 0;
     const words = this.topics[topicIndex].words;
-    this.grid = new Grid(5, 8, words);
+    this.grid = new Grid(7, 10, words);
   }
 
   @Watch('selectedCardIndex')
