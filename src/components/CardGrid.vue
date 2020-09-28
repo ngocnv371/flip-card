@@ -3,9 +3,13 @@
     <div class="d-flex" v-for="row of grid.rows" :key="`row-${row}`">
       <div class="d-flex pa-1" v-for="col of grid.cols" :key="`col-${col}`">
         <VectorImage
-          :word="true"
-          :image="grid.cells[(row - 1) * grid.cols + col - 1]"
-          :key="`card-${grid.cells[(row - 1) * grid.cols + col - 1]}`"
+          :word="!!grid.cells[(row - 1) * grid.cols + col - 1]"
+          :image="grid.cells[(row - 1) * grid.cols + col - 1] || 'blank'"
+          :key="
+            `card-${(row - 1) * grid.cols + col - 1}-${
+              grid.cells[(row - 1) * grid.cols + col - 1]
+            }`
+          "
           :class="{
             reachable: reachable(grid.cells[(row - 1) * grid.cols + col - 1]),
           }"
@@ -64,7 +68,7 @@ class Grid {
     for (let i = 0; i < Math.floor((this._rows * this._cols) / 2); i++) {
       const randomIndex = Math.floor(Math.random() * words.length);
       this._cells.push(words[randomIndex]);
-      this._cells.push(words[randomIndex]);
+      this._cells.push('');
     }
     this._cells.sort(() => Math.random() - Math.random());
   }
@@ -80,8 +84,47 @@ class Grid {
     return position.row * this._cols + position.col;
   }
 
+  private getValue(position: Position): string {
+    if (this.isOutOfBound(position)) {
+      return '';
+    }
+    return this.cells[this.getIndex(position)];
+  }
+
   public select(index: number) {
     this._selectedIndex = index;
+  }
+
+  private marchUp(position: Position): Position {
+    let up = this.up(position);
+    while (!this.getValue(up) && !this.isOutOfBound(up)) {
+      up = this.up(up);
+    }
+    return up;
+  }
+
+  private marchDown(position: Position): Position {
+    let down = this.down(position);
+    while (!this.getValue(down) && !this.isOutOfBound(down)) {
+      down = this.down(down);
+    }
+    return down;
+  }
+
+  private marchLeft(position: Position): Position {
+    let left = this.left(position);
+    while (!this.getValue(left) && !this.isOutOfBound(left)) {
+      left = this.left(left);
+    }
+    return left;
+  }
+
+  private marchRight(position: Position): Position {
+    let right = this.right(position);
+    while (!this.getValue(right) && !this.isOutOfBound(right)) {
+      right = this.right(right);
+    }
+    return right;
   }
 
   public get reachableCells(): number[] {
@@ -93,13 +136,13 @@ class Grid {
     const position = this.getPosition(this._selectedIndex);
     // from selected position
     // march up
-    targets.push(this.up(position));
+    targets.push(this.marchUp(position));
     // march down
-    targets.push(this.down(position));
+    targets.push(this.marchDown(position));
     // march left
-    targets.push(this.left(position));
+    targets.push(this.marchLeft(position));
     // march right
-    targets.push(this.right(position));
+    targets.push(this.marchRight(position));
     return targets
       .filter(t => !this.isOutOfBound(t))
       .map(t => this.getIndex(t));
