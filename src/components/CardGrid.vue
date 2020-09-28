@@ -6,6 +6,9 @@
           :word="true"
           :image="grid.cells[(row - 1) * grid.cols + col - 1]"
           :key="`card-${grid.cells[(row - 1) * grid.cols + col - 1]}`"
+          :class="{
+            reachable: reachable(grid.cells[(row - 1) * grid.cols + col - 1]),
+          }"
           :size="100"
           @click="onSelectCard((row - 1) * grid.cols + col - 1)"
         />
@@ -13,6 +16,12 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.reachable {
+  border: 1px solid lightgreen;
+}
+</style>
 
 <script lang="ts">
 import Vue from 'vue';
@@ -62,8 +71,8 @@ class Grid {
 
   private getPosition(index: number): Position {
     return {
-      row: index % this._cols,
-      col: Math.floor(index / this._cols),
+      col: index % this._cols,
+      row: Math.floor(index / this._cols),
     };
   }
 
@@ -75,8 +84,62 @@ class Grid {
     this._selectedIndex = index;
   }
 
-  public get reachableCells() {
-    return 0;
+  public get reachableCells(): number[] {
+    if (this._selectedIndex < 0) {
+      return [];
+    }
+
+    const targets = [];
+    const position = this.getPosition(this._selectedIndex);
+    // from selected position
+    // march up
+    targets.push(this.up(position));
+    // march down
+    targets.push(this.down(position));
+    // march left
+    targets.push(this.left(position));
+    // march right
+    targets.push(this.right(position));
+    return targets
+      .filter(t => !this.isOutOfBound(t))
+      .map(t => this.getIndex(t));
+  }
+
+  private isOutOfBound(position: Position) {
+    return (
+      position.col < 0 ||
+      position.col >= this.cols ||
+      position.row < 0 ||
+      position.row >= this.rows
+    );
+  }
+
+  private up(position: Position): Position {
+    return {
+      ...position,
+      row: position.row - 1,
+    };
+  }
+
+  private down(position: Position): Position {
+    return {
+      ...position,
+      row: position.row + 1,
+    };
+  }
+
+  private left(position: Position): Position {
+    return {
+      ...position,
+      col: position.col - 1,
+    };
+  }
+
+  private right(position: Position): Position {
+    return {
+      ...position,
+      col: position.col + 1,
+    };
   }
 }
 
@@ -92,6 +155,10 @@ export default class CardGrid extends Vue {
 
   public grid: Grid | null = null;
 
+  public get reachableCells() {
+    return this.grid?.reachableCells;
+  }
+
   public created() {
     const topicIndex = 0;
     const words = this.topics[topicIndex].words;
@@ -104,6 +171,13 @@ export default class CardGrid extends Vue {
       return;
     }
     this.grid.select(index);
+  }
+
+  reachable(index: number) {
+    if (!this.grid) {
+      return false;
+    }
+    return this.grid.reachableCells.includes(index);
   }
 }
 </script>
