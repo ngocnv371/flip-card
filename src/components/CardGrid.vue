@@ -35,12 +35,39 @@ interface Position {
   row: number;
 }
 
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+
+function getPropagationDirections(direction: Direction): Direction[] {
+  switch (direction) {
+    case Direction.Up:
+    case Direction.Down:
+      return [Direction.Left, Direction.Right];
+    case Direction.Left:
+    case Direction.Right:
+      return [Direction.Up, Direction.Down];
+  }
+  throw new Error('Invalid direction');
+}
+
+interface Path {
+  from: Position;
+  to: Position;
+  trails: Position[];
+}
+
 class Grid {
   private _rows = 0;
   private _cols = 0;
   private _cells: string[] = [];
   private _selectedIndex = -1;
+  private _paths: Path[] = [];
   private _history: { [key: number]: number } = {};
+  private _historyDepth: { [key: number]: number } = {};
 
   public get rows() {
     return this._rows;
@@ -119,83 +146,88 @@ class Grid {
 
   public select(index: number) {
     this._selectedIndex = index;
+    this._paths = [];
     this._history = {};
+    this._historyDepth = {};
+    const position = this.getPosition(this._selectedIndex);
+    // from selected position
+    // march up
+    const targets = [];
+    targets.push(...this.march(position, Direction.Up, [position]));
+    // march down
+    targets.push(...this.march(position, Direction.Down, [position]));
+    // march left
+    targets.push(...this.march(position, Direction.Left, [position]));
+    // march right
+    targets.push(...this.march(position, Direction.Right, [position]));
+    this._paths = targets.filter(t => !this.isOutOfBound(t.to)).sort();
   }
 
-  private marchUp(position: Position, depth = 3): Position[] {
+  private getAdjacent(from: Position, direction: Direction): Position {
+    switch (direction) {
+      case Direction.Up:
+        return {
+          ...from,
+          row: from.row - 1,
+        };
+      case Direction.Down:
+        return {
+          ...from,
+          row: from.row + 1,
+        };
+      case Direction.Left:
+        return {
+          ...from,
+          col: from.col - 1,
+        };
+      case Direction.Right:
+        return {
+          ...from,
+          col: from.col + 1,
+        };
+    }
+    throw new Error('Invalid direction');
+  }
+
+  private march(
+    from: Position,
+    direction: Direction,
+    trails: Position[],
+    depth = 3
+  ): Path[] {
     if (!depth) {
       return [];
     }
-    const bucket = [];
-    let up = this.up(position);
-    while (!this.getValue(up) && !this.isOutOfBound(up)) {
-      this._history[this.getIndex(up)] = this.getIndex(position);
-      bucket.push(...this.marchLeft(up, depth - 1));
-      bucket.push(...this.marchRight(up, depth - 1));
-      up = this.up(up);
+    const paths: Path[] = [];
+    let current = this.getAdjacent(from, direction);
+    // skip all blank cells
+    while (!this.getValue(current) && !this.isOutOfBound(current)) {
+      // propagate
+      const dirs = getPropagationDirections(direction);
+      dirs.forEach(d => {
+        const results = this.march(current, d, [...trails, current], depth - 1);
+        paths.push(...results);
+      });
+      current = this.getAdjacent(current, direction);
     }
-    if (this.getValue(up)) {
-      this._history[this.getIndex(up)] = this.getIndex(position);
-      bucket.push(up);
+    // touched a valid cell?
+    if (this.getValue(current)) {
+      paths.push({
+        from,
+        to: current,
+        trails: [...trails, current],
+      });
     }
-    return bucket;
+    return paths;
   }
 
-  private marchDown(position: Position, depth = 3): Position[] {
-    if (!depth) {
-      return [];
+  private setHistory(d: Position, s: Position, depth: number) {
+    const dest = this.getIndex(d);
+    const src = this.getIndex(s);
+    if (!this._historyDepth[dest]) {
+      this._historyDepth[dest] = depth;
+      this._history[dest] = src;
     }
-    const bucket = [];
-    let down = this.down(position);
-    while (!this.getValue(down) && !this.isOutOfBound(down)) {
-      this._history[this.getIndex(down)] = this.getIndex(position);
-      bucket.push(...this.marchLeft(down, depth - 1));
-      bucket.push(...this.marchRight(down, depth - 1));
-      down = this.down(down);
-    }
-    if (this.getValue(down)) {
-      this._history[this.getIndex(down)] = this.getIndex(position);
-      bucket.push(down);
-    }
-    return bucket;
-  }
-
-  private marchLeft(position: Position, depth = 3): Position[] {
-    if (!depth) {
-      return [];
-    }
-    const bucket = [];
-    let left = this.left(position);
-    while (!this.getValue(left) && !this.isOutOfBound(left)) {
-      this._history[this.getIndex(left)] = this.getIndex(position);
-      bucket.push(...this.marchUp(left, depth - 1));
-      bucket.push(...this.marchDown(left, depth - 1));
-      left = this.left(left);
-    }
-    if (this.getValue(left)) {
-      this._history[this.getIndex(left)] = this.getIndex(position);
-      bucket.push(left);
-    }
-    return bucket;
-  }
-
-  private marchRight(position: Position, depth = 3): Position[] {
-    if (!depth) {
-      return [];
-    }
-    const bucket = [];
-    let right = this.right(position);
-    while (!this.getValue(right) && !this.isOutOfBound(right)) {
-      this._history[this.getIndex(right)] = this.getIndex(position);
-      bucket.push(...this.marchUp(right, depth - 1));
-      bucket.push(...this.marchDown(right, depth - 1));
-      right = this.right(right);
-    }
-    if (this.getValue(right)) {
-      this._history[this.getIndex(right)] = this.getIndex(position);
-      bucket.push(right);
-    }
-    return bucket;
   }
 
   public getReachableCells(): number[] {
@@ -203,34 +235,20 @@ class Grid {
       return [];
     }
 
-    const targets = [];
-    const position = this.getPosition(this._selectedIndex);
-    // from selected position
-    // march up
-    targets.push(...this.marchUp(position));
-    // march down
-    targets.push(...this.marchDown(position));
-    // march left
-    targets.push(...this.marchLeft(position));
-    // march right
-    targets.push(...this.marchRight(position));
-    return targets
-      .filter(t => !this.isOutOfBound(t))
-      .map(t => this.getIndex(t))
+    return this._paths
+      .filter(t => !this.isOutOfBound(t.to))
+      .map(t => this.getIndex(t.to))
       .sort();
   }
 
   public getHistory(index: number) {
-    const data = [];
-    let last = index;
-    while (last) {
-      last = this._history[last];
-      if (last === undefined || data.length > 3) {
-        break;
-      }
-      data.push(last);
+    const relevantPaths = this._paths
+      .filter(p => this.getIndex(p.to) === index)
+      .sort((a, b) => a.trails.length - b.trails.length);
+    if (!relevantPaths.length) {
+      return [];
     }
-    return data;
+    return relevantPaths[0].trails.map(t => this.getIndex(t));
   }
 
   private isOutOfBound(position: Position) {
