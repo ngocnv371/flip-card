@@ -8,7 +8,9 @@
           :key="(row - 1) * grid.cols + col - 1"
           :selected="isSelected((row - 1) * grid.cols + col - 1)"
           :reachable="isReachable((row - 1) * grid.cols + col - 1)"
+          :outlined="isHistory((row - 1) * grid.cols + col - 1)"
           @click="onSelectCard"
+          @hover="onCardHover((row - 1) * grid.cols + col - 1)"
         />
       </div>
     </div>
@@ -38,6 +40,7 @@ class Grid {
   private _cols = 0;
   private _cells: string[] = [];
   private _selectedIndex = -1;
+  private _history: { [key: number]: number } = {};
 
   public get rows() {
     return this._rows;
@@ -116,6 +119,7 @@ class Grid {
 
   public select(index: number) {
     this._selectedIndex = index;
+    this._history = {};
   }
 
   private marchUp(position: Position, depth = 3): Position[] {
@@ -125,11 +129,13 @@ class Grid {
     const bucket = [];
     let up = this.up(position);
     while (!this.getValue(up) && !this.isOutOfBound(up)) {
+      this._history[this.getIndex(up)] = this.getIndex(position);
       bucket.push(...this.marchLeft(up, depth - 1));
       bucket.push(...this.marchRight(up, depth - 1));
       up = this.up(up);
     }
     if (this.getValue(up)) {
+      this._history[this.getIndex(up)] = this.getIndex(position);
       bucket.push(up);
     }
     return bucket;
@@ -142,11 +148,13 @@ class Grid {
     const bucket = [];
     let down = this.down(position);
     while (!this.getValue(down) && !this.isOutOfBound(down)) {
+      this._history[this.getIndex(down)] = this.getIndex(position);
       bucket.push(...this.marchLeft(down, depth - 1));
       bucket.push(...this.marchRight(down, depth - 1));
       down = this.down(down);
     }
     if (this.getValue(down)) {
+      this._history[this.getIndex(down)] = this.getIndex(position);
       bucket.push(down);
     }
     return bucket;
@@ -159,11 +167,13 @@ class Grid {
     const bucket = [];
     let left = this.left(position);
     while (!this.getValue(left) && !this.isOutOfBound(left)) {
+      this._history[this.getIndex(left)] = this.getIndex(position);
       bucket.push(...this.marchUp(left, depth - 1));
       bucket.push(...this.marchDown(left, depth - 1));
       left = this.right(left);
     }
     if (this.getValue(left)) {
+      this._history[this.getIndex(left)] = this.getIndex(position);
       bucket.push(left);
     }
     return bucket;
@@ -176,11 +186,13 @@ class Grid {
     const bucket = [];
     let right = this.right(position);
     while (!this.getValue(right) && !this.isOutOfBound(right)) {
+      this._history[this.getIndex(right)] = this.getIndex(position);
       bucket.push(...this.marchUp(right, depth - 1));
       bucket.push(...this.marchDown(right, depth - 1));
       right = this.right(right);
     }
     if (this.getValue(right)) {
+      this._history[this.getIndex(right)] = this.getIndex(position);
       bucket.push(right);
     }
     return bucket;
@@ -206,6 +218,19 @@ class Grid {
       .filter(t => !this.isOutOfBound(t))
       .map(t => this.getIndex(t))
       .sort();
+  }
+
+  public getHistory(index: number) {
+    const data = [];
+    let last = index;
+    while (last) {
+      last = this._history[last];
+      if (last === undefined || data.length > 3) {
+        break;
+      }
+      data.push(last);
+    }
+    return data;
   }
 
   private isOutOfBound(position: Position) {
@@ -259,6 +284,7 @@ export default class CardGrid extends Vue {
   public grid: Grid | null = null;
 
   public reachableCells: number[] = [];
+  public history: number[] = [];
 
   public created() {
     const topicIndex = 0;
@@ -279,6 +305,18 @@ export default class CardGrid extends Vue {
 
   isReachable(index: number) {
     return this.reachableCells.includes(index);
+  }
+
+  isHistory(index: number) {
+    return this.history.includes(index);
+  }
+
+  onCardHover(index: number) {
+    if (!this.grid) {
+      return;
+    }
+    this.history.length = 0;
+    this.history.push(...this.grid.getHistory(index));
   }
 
   isSelected(index: number) {

@@ -1,5 +1,10 @@
 <template>
-  <v-card flat :color="(selected && 'success') || (reachable && 'blue') || ''">
+  <v-card
+    flat
+    :color="(selected && 'success') || (reachable && 'blue') || ''"
+    :outlined="outlined"
+    @mouseover="$emit('hover')"
+  >
     <VectorImage
       size="100"
       :word="!!value"
@@ -32,5 +37,8 @@ export default class ConnectCard extends Vue {
 
   @Prop({ default: false })
   public reachable!: boolean;
+
+  @Prop({ default: false })
+  public outlined!: boolean;
 }
 </script>
