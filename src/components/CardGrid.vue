@@ -170,7 +170,7 @@ class Grid {
       this._history[this.getIndex(left)] = this.getIndex(position);
       bucket.push(...this.marchUp(left, depth - 1));
       bucket.push(...this.marchDown(left, depth - 1));
-      left = this.right(left);
+      left = this.left(left);
     }
     if (this.getValue(left)) {
       this._history[this.getIndex(left)] = this.getIndex(position);
