@@ -1,5 +1,5 @@
 <template>
-  <v-img :src="url" :width="size" v-on="$listeners" v-bind="$attrs">
+  <v-img eager :src="url" :width="size" v-on="$listeners" v-bind="$attrs">
     <slot></slot>
   </v-img>
 </template>
