@@ -53,16 +53,81 @@ interface Position {
   row: number;
 }
 
-/**
- * find all the positions that can be reached from the provided position
- * @param grid the grid
- * @param position the position to calculate
- */
-export function calculateLinks(
-  grid: string[][],
-  position: Position
-): Position[] {
-  return [];
+export type Grid = string[][];
+
+export function getWordAt(grid: Grid, position: Position): string {
+  const row = grid[position.row];
+  const col = row[position.col];
+  return col;
+}
+
+export function canConnect(grid: Grid, from: Position, to: Position): boolean {
+  console.log('grid');
+  console.table(grid);
+  if (getWordAt(grid, from) != getWordAt(grid, to)) {
+    return false;
+  }
+
+  const LEFT: Position = { col: -1, row: 0 };
+  const RIGHT: Position = { col: 1, row: 0 };
+  const UP: Position = { col: 0, row: -1 };
+  const DOWN: Position = { col: 0, row: 1 };
+
+  function inbound(position: Position): boolean {
+    return !(
+      position.col < 0 ||
+      position.row < 0 ||
+      position.row > grid.length - 1 ||
+      position.col > grid[0].length - 1
+    );
+  }
+
+  function march(from: Position, direction: Position): Position[] {
+    const hits: Position[] = [];
+    let next = from;
+    do {
+      next = { col: next.col + direction.col, row: next.row + direction.row };
+      if (inbound(next)) {
+        hits.push(next);
+      }
+    } while (inbound(next) && !getWordAt(grid, next));
+    return hits;
+  }
+
+  function getAreaOfEffect(position: Position): Position[] {
+    return [
+      ...march(position, LEFT),
+      ...march(position, RIGHT),
+      ...march(position, UP),
+      ...march(position, DOWN),
+    ];
+  }
+
+  const area1 = getAreaOfEffect(from);
+  console.log('area1');
+  console.table(area1);
+  const area2 = getAreaOfEffect(to);
+  console.log('area2');
+  console.table(area2);
+
+  // check intersection
+  const intersected = area2.find(p =>
+    area1.some(px => px.col === p.col && px.row === p.row)
+  );
+  if (intersected) {
+    return true;
+  }
+
+  // check if anything from area1 have a straight shot at anything in area2
+  const exploded1 = area1.flatMap(p => getAreaOfEffect(p));
+  console.log('exploded1');
+  console.table(exploded1);
+  const hit = area2.find(p =>
+    area1.some(px => px.col === p.col && px.row === p.row)
+  );
+  console.log('hit', hit);
+
+  return !!hit;
 }
 
 /**
@@ -71,7 +136,7 @@ export function calculateLinks(
  * @param word the word to find
  * @returns list of positions
  */
-export function findWord(grid: string[][], word: string): Position[] {
+export function findWord(grid: Grid, word: string): Position[] {
   const bag: Position[] = [];
   for (let row = 0; row < grid.length; row++) {
     for (let col = 0; col < grid[0].length; col++) {

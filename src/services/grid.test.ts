@@ -1,4 +1,4 @@
-import { calculateLinks, findWord, generateGrid } from './grid';
+import { canConnect, findWord, generateGrid } from './grid';
 
 describe('generateGrid', () => {
   test('4x4', () => {
@@ -82,151 +82,8 @@ describe('findWord', () => {
   });
 });
 
-describe('calculateLinks', () => {
-  function testWords(grid: string[][], words: string[]) {
-    words.forEach(v => {
-      const pos = findWord(grid, v);
-      expect(calculateLinks(grid, pos[0])).toEqual([pos[1]]);
-      expect(calculateLinks(grid, pos[1])).toEqual([pos[0]]);
-    });
-  }
-
-  test('4x4 grid: return nothing when checking empty cells', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', ''],
-      ['', 'a', 'b', ''],
-      ['', 'a', 'b', ''],
-      ['', '', '', ''],
-    ];
-    // first column
-    expect(calculateLinks(grid, { row: 0, col: 0 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 0, col: 1 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 0, col: 2 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 0, col: 3 })).toEqual([]);
-    // last column
-    expect(calculateLinks(grid, { row: 3, col: 0 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 3, col: 1 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 3, col: 2 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 3, col: 3 })).toEqual([]);
-    // first col
-    expect(calculateLinks(grid, { row: 1, col: 0 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 2, col: 0 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 3, col: 0 })).toEqual([]);
-    // last col
-    expect(calculateLinks(grid, { row: 1, col: 3 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 2, col: 3 })).toEqual([]);
-    expect(calculateLinks(grid, { row: 3, col: 3 })).toEqual([]);
-  });
-
-  test('4x4 grid: horizontal adjacent cells', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', ''],
-      ['', 'a', 'a', ''],
-      ['', 'b', 'b', ''],
-      ['', '', '', ''],
-    ];
-    testWords(grid, ['a', 'b']);
-  });
-
-  test('4x4 grid: vertical adjacent cells', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', ''],
-      ['', 'a', 'b', ''],
-      ['', 'a', 'b', ''],
-      ['', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b']);
-  });
-
-  test('4x5 grid: vertical adjacent cells', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', '', ''],
-      ['', 'a', 'b', 'c', ''],
-      ['', 'a', 'b', 'c', ''],
-      ['', '', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b', 'c']);
-  });
-
-  test('4x5 grid: horizontal adjacent cells', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', '', ''],
-      ['', 'c', 'a', 'a', ''],
-      ['', 'b', 'b', 'c', ''],
-      ['', '', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b']);
-    // c
-    const pos = findWord(grid, 'c');
-    expect(calculateLinks(grid, pos[0])).toEqual([]);
-    expect(calculateLinks(grid, pos[1])).toEqual([]);
-  });
-
-  test('4x5 grid: horizontal straight', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', '', ''],
-      ['', 'a', '', 'a', ''],
-      ['', 'b', '', 'b', ''],
-      ['', '', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b']);
-  });
-
-  test('5x4 grid: vertical straight', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', ''],
-      ['', 'c', 'b', ''],
-      ['', '', '', ''],
-      ['', 'c', 'b', ''],
-      ['', '', '', ''],
-    ];
-
-    testWords(grid, ['b', 'c']);
-  });
-
-  test('7x7 grid: horizontal straight', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', '', '', '', ''],
-      ['', 'a', '', '', '', 'a', ''],
-      ['', '', '', '', '', '', ''],
-      ['', 'c', '', '', '', 'c', ''],
-      ['', '', '', '', '', '', ''],
-      ['', 'b', '', '', '', 'b', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b', 'c']);
-  });
-
-  test('7x7 grid: vertical straight', () => {
-    // mock a 4x4 grid
-    const grid = [
-      ['', '', '', '', '', '', ''],
-      ['', 'a', '', 'c', '', 'b', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', 'c', '', '', ''],
-      ['', 'a', '', '', '', 'b', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-
-    testWords(grid, ['a', 'b', 'c']);
-  });
-
-  test('7x7 grid: one turn', () => {
-    // mock a 4x4 grid
+describe('canConnect', () => {
+  test('7x7, one turn', () => {
     const grid = [
       ['', '', '', '', '', '', ''],
       ['', 'a', '', 'b', '', '', ''],
@@ -236,6 +93,64 @@ describe('calculateLinks', () => {
       ['', '', '', 'e', 'c', '', ''],
       ['', '', '', '', '', '', ''],
     ];
-    testWords(grid, ['a', 'b', 'c', 'd', 'e']);
+    // true
+    const p1 = findWord(grid, 'a');
+    expect(canConnect(grid, p1[0], p1[1])).toBe(true);
+    expect(canConnect(grid, p1[1], p1[0])).toBe(true);
+    const p2 = findWord(grid, 'b');
+    expect(canConnect(grid, p2[0], p2[1])).toBe(true);
+    expect(canConnect(grid, p2[1], p2[0])).toBe(true);
+    const p3 = findWord(grid, 'c');
+    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
+    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
+    const p4 = findWord(grid, 'd');
+    expect(canConnect(grid, p4[0], p4[1])).toBe(true);
+    expect(canConnect(grid, p4[1], p4[0])).toBe(true);
+    const p5 = findWord(grid, 'e');
+    expect(canConnect(grid, p5[0], p5[1])).toBe(true);
+    expect(canConnect(grid, p5[1], p5[0])).toBe(true);
+    // wrong words
+    expect(canConnect(grid, p1[0], p2[1])).toBe(false);
+    expect(canConnect(grid, p1[1], p2[0])).toBe(false);
+  });
+  test('easy, two turns', () => {
+    const grid = [
+      ['', '', '', '', '', '', ''],
+      ['', 'a', '', 'b', 'a', '', ''],
+      ['', '', '', 'x', 'x', '', ''],
+      ['', '', 'c', '', 'x', '', ''],
+      ['', '', 'x', 'x', 'b', 'x', ''],
+      ['', '', 'c', 'x', 'x', '', ''],
+      ['', '', '', '', '', '', ''],
+    ];
+    const p1 = findWord(grid, 'a');
+    expect(canConnect(grid, p1[0], p1[1])).toBe(true);
+    expect(canConnect(grid, p1[1], p1[0])).toBe(true);
+    const p2 = findWord(grid, 'b');
+    expect(canConnect(grid, p2[0], p2[1])).toBe(false);
+    expect(canConnect(grid, p2[1], p2[0])).toBe(false);
+    const p3 = findWord(grid, 'c');
+    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
+    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
+  });
+  test('can not, two turns', () => {
+    const grid = [
+      ['', '', '', '', '', '', ''],
+      ['', 'x', 'x', 'b', 'a', '', ''],
+      ['', 'c', 'a', 'x', 'x', '', ''],
+      ['', '', '', '', 'x', '', ''],
+      ['', '', 'x', 'x', 'b', 'x', ''],
+      ['', 'c', '', 'x', 'x', '', ''],
+      ['', '', '', '', '', '', ''],
+    ];
+    const p1 = findWord(grid, 'a');
+    expect(canConnect(grid, p1[0], p1[1])).toBe(false);
+    expect(canConnect(grid, p1[1], p1[0])).toBe(false);
+    const p2 = findWord(grid, 'b');
+    expect(canConnect(grid, p2[0], p2[1])).toBe(false);
+    expect(canConnect(grid, p2[1], p2[0])).toBe(false);
+    const p3 = findWord(grid, 'c');
+    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
+    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
   });
 });
