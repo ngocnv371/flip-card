@@ -1,4 +1,4 @@
-import { canConnect, findWord, generateGrid } from './grid';
+import { canConnect, findWord, generateGrid, Grid } from './grid';
 
 describe('generateGrid', () => {
   test('4x4', () => {
@@ -83,74 +83,44 @@ describe('findWord', () => {
 });
 
 describe('canConnect', () => {
-  test('7x7, one turn', () => {
-    const grid = [
-      ['', '', '', '', '', '', ''],
-      ['', 'a', '', 'b', '', '', ''],
-      ['', '', '', 'a', 'b', '', ''],
-      ['', '', '', '', 'd', '', ''],
-      ['', '', 'e', 'd', '', 'c', ''],
-      ['', '', '', 'e', 'c', '', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-    // true
-    const p1 = findWord(grid, 'a');
-    expect(canConnect(grid, p1[0], p1[1])).toBe(true);
-    expect(canConnect(grid, p1[1], p1[0])).toBe(true);
-    const p2 = findWord(grid, 'b');
-    expect(canConnect(grid, p2[0], p2[1])).toBe(true);
-    expect(canConnect(grid, p2[1], p2[0])).toBe(true);
-    const p3 = findWord(grid, 'c');
-    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
-    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
-    const p4 = findWord(grid, 'd');
-    expect(canConnect(grid, p4[0], p4[1])).toBe(true);
-    expect(canConnect(grid, p4[1], p4[0])).toBe(true);
-    const p5 = findWord(grid, 'e');
-    expect(canConnect(grid, p5[0], p5[1])).toBe(true);
-    expect(canConnect(grid, p5[1], p5[0])).toBe(true);
-    // wrong words
-    expect(canConnect(grid, p1[0], p2[1])).toBe(false);
-    expect(canConnect(grid, p1[1], p2[0])).toBe(false);
-  });
-  test('easy, two turns', () => {
-    const grid = [
-      ['', '', '', '', '', '', ''],
-      ['', 'a', '', 'b', 'a', '', ''],
-      ['', '', '', 'x', 'x', '', ''],
-      ['', '', 'c', '', 'x', '', ''],
-      ['', '', 'x', 'x', 'b', 'x', ''],
-      ['', '', 'c', 'x', 'x', '', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-    const p1 = findWord(grid, 'a');
-    expect(canConnect(grid, p1[0], p1[1])).toBe(true);
-    expect(canConnect(grid, p1[1], p1[0])).toBe(true);
-    const p2 = findWord(grid, 'b');
-    expect(canConnect(grid, p2[0], p2[1])).toBe(false);
-    expect(canConnect(grid, p2[1], p2[0])).toBe(false);
-    const p3 = findWord(grid, 'c');
-    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
-    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
-  });
-  test('can not, two turns', () => {
-    const grid = [
-      ['', '', '', '', '', '', ''],
-      ['', 'x', 'x', 'b', 'a', '', ''],
-      ['', 'c', 'a', 'x', 'x', '', ''],
-      ['', '', '', '', 'x', '', ''],
-      ['', '', 'x', 'x', 'b', 'x', ''],
-      ['', 'c', '', 'x', 'x', '', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-    const p1 = findWord(grid, 'a');
-    expect(canConnect(grid, p1[0], p1[1])).toBe(false);
-    expect(canConnect(grid, p1[1], p1[0])).toBe(false);
-    const p2 = findWord(grid, 'b');
-    expect(canConnect(grid, p2[0], p2[1])).toBe(false);
-    expect(canConnect(grid, p2[1], p2[0])).toBe(false);
-    const p3 = findWord(grid, 'c');
-    expect(canConnect(grid, p3[0], p3[1])).toBe(true);
-    expect(canConnect(grid, p3[1], p3[0])).toBe(true);
+  const dataset: [string, Grid, string[], any[]][] = [
+    [
+      'straight vertical',
+      [
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'a', ' ', 'b', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', 'd', ' '],
+        [' ', ' ', ' ', ' ', 'c', 'd', ' '],
+        [' ', ' ', ' ', 'b', ' ', ' ', ' '],
+        [' ', 'a', ' ', ' ', 'c', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+      ],
+      ['a', 'b', 'c', 'd'],
+      [],
+    ],
+    [
+      'straight horizontal',
+      [
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'a', ' ', ' ', ' ', 'a', ' '],
+        [' ', ' ', 'b', ' ', ' ', 'b', ' '],
+        [' ', ' ', ' ', 'c', ' ', 'c', ' '],
+        [' ', ' ', ' ', ' ', 'd', 'd', ' '],
+        [' ', ' ', 'e', 'e', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+      ],
+      ['a', 'b', 'c', 'd', 'e'],
+      [],
+    ],
+  ];
+  function printPosition(p: any) {
+    return `(${p[0].col} ${p[0].row})`;
+  }
+  describe.each(dataset)('%s', (name, grid, words, path) => {
+    const p = findWord(grid, words[0]);
+    it(`should find correct link for '${words[0]}': (${p[0].col},${p[0].row}) -> (${p[1].col},${p[1].row})`, () => {
+      expect(canConnect(grid, p[0], p[1])).toBeTruthy();
+      expect(canConnect(grid, p[1], p[0])).toBeTruthy();
+    });
   });
 });

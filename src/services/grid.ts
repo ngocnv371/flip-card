@@ -61,10 +61,17 @@ export function getWordAt(grid: Grid, position: Position): string {
   return col;
 }
 
+export function isTransparent(grid: Grid, position: Position): boolean {
+  const word = getWordAt(grid, position);
+
+  return ['', '', null].includes(word);
+}
+
 export function canConnect(grid: Grid, from: Position, to: Position): boolean {
   console.log('grid');
   console.table(grid);
   if (getWordAt(grid, from) != getWordAt(grid, to)) {
+    console.log('different word');
     return false;
   }
 
@@ -90,7 +97,7 @@ export function canConnect(grid: Grid, from: Position, to: Position): boolean {
       if (inbound(next)) {
         hits.push(next);
       }
-    } while (inbound(next) && !getWordAt(grid, next));
+    } while (inbound(next) && isTransparent(grid, next));
     return hits;
   }
 
